@@ -1,0 +1,11 @@
+[package]
+name = "aerodrome_wtf"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alloy = { version = "1.0.17", features = ["full"] }
+dotenv = "0.15.0"
+ethers-core = "2.0.14"
+eyre = "0.6.12"
+tokio = { version = "1.46.1", features = ["full"] }
