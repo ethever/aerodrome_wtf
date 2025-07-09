@@ -165,26 +165,79 @@ async fn main() -> Result<()> {
 
         let tick_lower = tick_aligned - tick_spacing;
         let tick_upper = tick_aligned + tick_spacing;
-        let tx = helper
-            .mint(tick_lower, tick_upper, 10, Default::default())
-            .send()
-            .await?
-            .watch()
-            .await?;
 
-        println!(
-            "Mint transaction: {:?} with tick [{},{}]",
-            tx, tick_lower, tick_upper,
-        );
+        // Mint liquidity.
+        {
+            let tx = helper
+                .mint(tick_lower, tick_upper, 10, Default::default())
+                .send()
+                .await?
+                .watch()
+                .await?;
 
-        let position_info = pool
-            .positions(index(helper.address().clone(), tick_lower, tick_upper))
-            .call()
-            .await?;
+            println!(
+                "Mint liquidity transaction: {:?} with tick [{},{}]",
+                tx, tick_lower, tick_upper,
+            );
 
-        println!("Position info: {:#?}", position_info);
+            let position_info = pool
+                .positions(index(helper.address().clone(), tick_lower, tick_upper))
+                .call()
+                .await?;
+            println!("Position info: {:#?}", position_info);
 
-        println!("----------------Waiting for next tick...(10sec)-----------------");
+            let balances = helper.balances().call().await?;
+            println!(
+                "Helper contract balances: WETH: {}, cbLTC: {}",
+                balances._0, balances._1
+            );
+
+            println!("----------------Waiting for burning liquidity(5sec)-----------------");
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+
+            // Burn liquidity.
+            {
+                let tx = helper
+                    .burn(tick_lower, tick_upper, position_info.liquidity)
+                    .send()
+                    .await?
+                    .watch()
+                    .await?;
+                println!(
+                    "Burn liquidity transaction: {:?} with tick [{},{}], liquidity: {}",
+                    tx, tick_lower, tick_upper, position_info.liquidity
+                );
+
+                let position_info = pool
+                    .positions(index(helper.address().clone(), tick_lower, tick_upper))
+                    .call()
+                    .await?;
+                println!("Position info: {:#?}", position_info);
+            }
+        }
+
+        // Collect tokens.
+        {
+            let tx = helper
+                .collect(tick_lower, tick_upper, u128::MAX, u128::MAX)
+                .send()
+                .await?
+                .watch()
+                .await?;
+
+            println!(
+                "Collect fees transaction: {:?} with tick [{},{}]",
+                tx, tick_lower, tick_upper
+            );
+
+            let balances = helper.balances().call().await?;
+            println!(
+                "Helper contract balances: WETH: {}, cbLTC: {}",
+                balances._0, balances._1
+            );
+        }
+
+        println!("----------------Waiting for tick(10sec)-----------------");
         tokio::time::sleep(std::time::Duration::from_secs(10)).await;
     }
 }

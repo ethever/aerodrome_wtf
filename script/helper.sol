@@ -54,8 +54,37 @@ contract Helper {
         IERC20(token1).transfer(msg.sender, a1);
     }
 
-    // todo transfer out the liquidity
-    // burn & collect from the pool
+    function burn(
+        int24 tickLower,
+        int24 tickUpper,
+        uint128 amount
+    ) external returns (uint256 amount0, uint256 amount1) {
+        require(msg.sender == owner, "msg.sender == owner");
+        (amount0, amount1) = CLPool(pool).burn(tickLower, tickUpper, amount);
+    }
+
+    function collect(
+        int24 tickLower,
+        int24 tickUpper,
+        uint128 amount0Requested,
+        uint128 amount1Requested
+    ) external returns (uint128 amount0, uint128 amount1) {
+        require(msg.sender == owner, "msg.sender == owner");
+        (amount0, amount1) = CLPool(pool).collect(
+            address(this),
+            tickLower,
+            tickUpper,
+            amount0Requested,
+            amount1Requested
+        );
+    }
+
+    function balances() public view returns (uint256, uint256) {
+        return (
+            IERC20(token0).balanceOf(address(this)),
+            IERC20(token1).balanceOf(address(this))
+        );
+    }
 }
 
 interface CLPool {
@@ -66,4 +95,17 @@ interface CLPool {
         uint128 amount,
         bytes calldata data
     ) external returns (uint256 amount0, uint256 amount1);
+    function burn(
+        int24 tickLower,
+        int24 tickUpper,
+        uint128 amount
+    ) external returns (uint256 amount0, uint256 amount1);
+
+    function collect(
+        address recipient,
+        int24 tickLower,
+        int24 tickUpper,
+        uint128 amount0Requested,
+        uint128 amount1Requested
+    ) external returns (uint128 amount0, uint128 amount1);
 }
