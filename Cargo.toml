@@ -8,4 +8,15 @@ alloy = { version = "1.0.17", features = ["full"] }
 dotenv = "0.15.0"
 ethers-core = "2.0.14"
 eyre = "0.6.12"
+num-bigint = "0.4.6"
+num-rational = "0.4.2"
+num-traits = "0.2.19"
+ruint = { version = "1.15.0", features = [
+    "num-traits",
+    "num-bigint",
+    "num-integer",
+] }
+thiserror = "2.0.12"
+# ruint-macro = "1.2.1"
 tokio = { version = "1.46.1", features = ["full"] }
+uniswap_v3_math = "0.6.1"

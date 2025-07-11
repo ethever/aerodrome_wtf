@@ -25,7 +25,13 @@ dependencies = [
  "dotenv",
  "ethers-core",
  "eyre",
+ "num-bigint",
+ "num-rational",
+ "num-traits",
+ "ruint",
+ "thiserror 2.0.12",
  "tokio",
+ "uniswap_v3_math",
 ]
 
 [[package]]
@@ -2466,6 +2472,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-rational"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f83d14da390562dca69fc84082e73e548e1ad308d24accdedd2720017cb37824"
+dependencies = [
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4061,6 +4078,17 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
+
+[[package]]
+name = "uniswap_v3_math"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5263aee458b98fd1ab4aeda3bc517c86689fdcc56e9879acbc99dc58fdf3d911"
+dependencies = [
+ "alloy-primitives",
+ "eyre",
+ "thiserror 2.0.12",
+]
 
 [[package]]
 name = "untrusted"

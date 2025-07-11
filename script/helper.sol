@@ -7,6 +7,7 @@ contract Helper {
     address token0 = address(0x4200000000000000000000000000000000000006);
     // cbLTC
     address token1 = address(0xcb17C9Db87B595717C857a08468793f5bAb6445F);
+    error TokenInsufficient(address token, uint256 balance, uint256 required);
 
     constructor(address _pool) {
         owner = msg.sender;
@@ -46,9 +47,20 @@ contract Helper {
     function uniswapV3MintCallback(
         uint256 a0,
         uint256 a1,
-        bytes calldata data
+        bytes calldata
     ) external {
         require(msg.sender == pool, "msg.sender == pool");
+
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+
+        if (balance0 < a0) {
+            revert TokenInsufficient(token0, balance0, a0);
+        }
+
+        if (balance1 < a1) {
+            revert TokenInsufficient(token1, balance1, a1);
+        }
 
         IERC20(token0).transfer(msg.sender, a0);
         IERC20(token1).transfer(msg.sender, a1);
